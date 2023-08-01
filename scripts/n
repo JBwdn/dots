@@ -3,8 +3,13 @@
 # Requires: fzf, nvim
 # Usage: n.sh
 
-# Get the list of markdown files in ~/notes (recursively) and sort them by date
+# Get the list of markdown files in ~/notes (recursively)
 file=$(cd ~/notes; find -type f -name "*.md" | fzf)
+
+# If no file was selected, exit
+if [ -z "$file" ]; then
+    exit 0
+fi
 
 # Open the selected file in nvim
 nvim ~/notes/$file

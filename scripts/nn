@@ -2,16 +2,19 @@
 
 # New Note
 
-# List and select directory in ~/notes using peco
+# List and select directory in ~/notes using fzf
 
-DIR=~/notes/$(cd ~/notes && ls -d */ | peco)
+NOTES_DIR=~/notes
+SUB_DIR=$(cd ~/notes && ls -d */ | fzf)
 
-# If no directory is empty, exit
-if [ -z $DIR ]; then
+# if no directory selected, exit
+cd $NOTES_DIR
+if [ -z "$SUB_DIR" ]; then
     echo "No directory selected"
     exit 1
 fi
 
+DIR=$NOTES_DIR"/"$SUB_DIR
 # Accept user input for note name
 read -p "Note name: " NAME
 
