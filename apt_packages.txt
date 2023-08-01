@@ -1,0 +1,4 @@
+trash-cli
+git
+peco
+fzf

@@ -1,0 +1,11 @@
+#!/bin/bash
+# List all markdown files in ~/notes using peco and open the selected file in nvim
+# Requires: fzf, nvim
+# Usage: n.sh
+
+# Get the list of markdown files in ~/notes (recursively) and sort them by date
+file=$(cd ~/notes; find -type f -name "*.md" | fzf)
+
+# Open the selected file in nvim
+nvim ~/notes/$file
+

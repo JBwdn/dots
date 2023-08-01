@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# New Note
+
+# List and select directory in ~/notes using peco
+
+DIR=~/notes/$(cd ~/notes && ls -d */ | peco)
+
+# If no directory is empty, exit
+if [ -z $DIR ]; then
+    echo "No directory selected"
+    exit 1
+fi
+
+# Accept user input for note name
+read -p "Note name: " NAME
+
+DATE=$(date +%Y-%m-%d)
+FILE=$DIR"$DATE"_"$NAME".md
+echo Creating: $FILE
+
+# If file already exists, exit
+if [ -f $FILE ]; then
+    echo "File already exists"
+    exit 1
+fi
+
+# Accept user input for tags
+read -p "Tags: " TAGS
+
+# Format markdown header
+HEADER="---\ntitle: $NAME\ndate: $DATE\ntags: $TAGS\n---\n\n"
+
+# Make file and open in vim
+echo -e $HEADER > $FILE
+nvim $FILE
