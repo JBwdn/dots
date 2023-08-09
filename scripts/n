@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # List all markdown files in ~/notes using peco and open the selected file in nvim
 # Requires: fzf, nvim
 # Usage: n.sh
