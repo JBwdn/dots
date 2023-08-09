@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+# Watch a file and run a command when it changes
+
+# Usage:
+# watchf <file> <command>
+# eg. watchf file.txt echo "File changed!"
+# or  watchf script.py python3 script.py
+
+# Check that at least two arguments were given:
+if [ $# -lt 2 ]
+then
+    echo "Usage: watchf <file> <command>"
+    echo
+    echo "eg. watchf file.txt echo \"File changed!\""
+    exit 1
+fi
+
+# Get the file and command:
+FILE=$1
+CMD="${@:2}"
+
+# Exit trap to print n times ran:
+trap finish EXIT
+finish() {
+    echo
+    echo
+    echo "watchf ran $COUNT times."
+}
+
+echo "Watching '$FILE'..."
+echo "Running '$CMD' on change..."
+
+# Set initial time of file:
+LTIME=`stat -c %Z $1`
+
+COUNT=0
+
+# Run watch loop until cancelled:
+while true
+do
+    # Check if file has been modified:
+    ATIME=`stat -c %Z $1`
+
+    # If file has been modified, run the command:
+    if [[ "$ATIME" != "$LTIME" ]]
+    then
+        # Print the header:
+        HUMAN_TIME=`date +"%Y-%m-%d / %H:%M:%S"`
+        echo
+        echo "--------- $1 ($HUMAN_TIME) ---------"
+
+        # Run the command:
+        $CMD
+
+        # Update the time:
+        LTIME=$ATIME
+        COUNT=$((COUNT+1))
+    fi
+done
+
