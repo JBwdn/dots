@@ -23,7 +23,7 @@ Plug 'tpope/vim-dispatch'
 Plug 'radenling/vim-dispatch-neovim'
 call plug#end()
 
-" Command to reload config:
+" Reload config:
 command! RC source $MYVIMRC
 
 " Python:
@@ -31,12 +31,20 @@ let python3_host_prog='/home/jb/.miniconda_envs/envs/nvim-env/bin/python'
 
 autocmd FileType python map <buffer> <F7> :w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F7> <esc>:w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
-autocmd FileType python map <buffer> <F8> :w<CR>:exec 'Dispatch black' shellescape(@%, 1)<CR>q
-autocmd FileType python imap <buffer> <F8> <esc>:w<CR>:exec 'Dispatch black' shellescape(@%, 1)<CR>q
+autocmd FileType python map <buffer> <F8> :w<CR>:exec 'Dispatch! black' shellescape(@%, 1)<CR>q
+autocmd FileType python imap <buffer> <F8> <esc>:w<CR>:exec 'Dispatch! black' shellescape(@%, 1)<CR>q
 autocmd FileType python map <buffer> <F9> :w<CR>:exec 'Dispatch mypy' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F9> <esc>:w<CR>:exec 'Dispatch mypy' shellescape(@%, 1)<CR>
 autocmd FileType python map <buffer> <F10> :w<CR>:exec 'Dispatch pylint' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F10> <esc>:w<CR>:exec 'Dispatch pylint' shellescape(@%, 1)<CR>
+
+" iPython REPL:
+command! IPYREPL :vsplit | wincmd l | terminal ipython
+noremap <F5> :IPYREPL<CR>
+" Send visual mode selection to repl
+autocmd FileType python vmap <CR> y<C-w>wpa<CR><C-\><C-n><C-w>p
+" Send current line to repl in normal mode
+autocmd FileType python nmap <CR> Vy<C-w>wpa<CR><C-\><C-n><C-w>pj
 
 " Rust:
 autocmd FileType rust map <buffer> <F7> :w<CR>:exec '!cargo run'<CR>
@@ -47,6 +55,12 @@ autocmd FileType rust map <buffer> <F9> :w<CR>:exec '!cargo clippy'<CR>
 autocmd FileType rust imap <buffer> <F9> <esc>:w<CR>:exec '!cargo clippy'<CR>
 autocmd FileType rust map <buffer> <F10> :w<CR>:exec '!cargo check'<CR>
 autocmd FileType rust imap <buffer> <F10> <esc>:w<CR>:exec '!cargo check'<CR>
+
+" Bash:
+autocmd FileType sh map <buffer> <F7> :w<CR>:exec 'Dispatch bash' shellescape(@%, 1)<CR>
+autocmd FileType sh imap <buffer> <F7> <esc>:w<CR>:exec 'Dispatch bash' shellescape(@%, 1)<CR>
+autocmd FileType sh map <buffer> <F8> :w<CR>:exec 'Dispatch! beautysh' shellescape(@%, 1)<CR>
+autocmd FileType sh imap <buffer> <F8> <esc>:w<CR>:exec 'Dispatch! beautysh' shellescape(@%, 1)<CR>
 
 " Settings
 " ========
