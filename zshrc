@@ -55,3 +55,4 @@ conda activate $(conda env list | tail -n +3 | awk '{print $1;}' | peco --prompt
 function csv(){
     csvtool readable $1 | view -
 }
+source .zshrc_conda
