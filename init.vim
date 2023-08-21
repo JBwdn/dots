@@ -21,13 +21,14 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'luochen1990/rainbow'
 Plug 'tpope/vim-dispatch'
 Plug 'radenling/vim-dispatch-neovim'
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 call plug#end()
 
 " Reload config:
 command! RC source $MYVIMRC
 
 " Python:
-let python3_host_prog='/home/jb/.miniconda_envs/envs/nvim-env/bin/python'
+let python3_host_prog='/home/jb/.miniconda/envs/nvim_env/bin/python3'
 
 autocmd FileType python map <buffer> <F7> :w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F7> <esc>:w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
