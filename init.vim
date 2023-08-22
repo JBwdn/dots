@@ -135,7 +135,7 @@ let g:copilot_no_tab_map = v:true
 let g:copilot_no_enter_map = v:true
 
 " Nerdtree:
-map <C-n> :NERDTreeToggle<CR>
+map <F2> :NERDTreeToggle<CR>
 
 let NERDTreeShowHidden=1
 let NERDTreeMinimalUI=1
