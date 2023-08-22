@@ -23,6 +23,7 @@ alias t="exa -T -L 2"
 alias rm="trash"
 alias clip="xclip -sel c < "
 alias ssh_fwd="eval $(ssh-agent -s) ; ssh-add ~/.ssh/id_ed25519"
+alias dots="vi $HOME/dots/"
 
 alias L="screen -ls"
 alias S="screen -R"
