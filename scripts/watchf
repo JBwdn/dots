@@ -10,7 +10,7 @@
 # Check that at least two arguments were given:
 if [ $# -lt 2 ]
 then
-    echo "Usage: watchf <file> <command>"
+    echo "Usage: watchf <file> <command ...>"
     echo
     echo "eg. watchf file.txt echo \"File changed!\""
     exit 1
