@@ -22,6 +22,7 @@ Plug 'luochen1990/rainbow'
 Plug 'tpope/vim-dispatch'
 Plug 'radenling/vim-dispatch-neovim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+Plug 'tmhedberg/SimpylFold'
 call plug#end()
 
 " Reload config:
@@ -156,3 +157,10 @@ let g:gruvbox_italic=1
 colorscheme gruvbox
 let g:gruvbox_contrast_dark='hard'
 let g:airline_theme='base16_gruvbox_dark_hard'
+
+" Folding:
+set foldlevelstart=99
+set foldmethod=syntax
+let g:SimpylFold_docstring_preview=1
+let g:SimpylFold_fold_docstring=1
+let g:SimpylFold_fold_import=0
