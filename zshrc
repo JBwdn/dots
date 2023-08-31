@@ -24,6 +24,7 @@ alias rm="trash"
 alias clip="xclip -sel c < "
 alias ssh_fwd="eval $(ssh-agent -s) ; ssh-add ~/.ssh/id_ed25519"
 alias dots="vi $HOME/dots/"
+alias pyloc="git ls-files | grep '.py' | xargs wc -l"
 
 alias L="screen -ls"
 alias S="screen -R"
