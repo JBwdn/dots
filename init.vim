@@ -6,9 +6,22 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
   \| PlugInstall --sync | source $MYVIMRC
 \| endif
 
+" Coc extensions:
+let g:coc_global_extensions = [
+		\ 'coc-json',
+		\ 'coc-prettier',
+		\ 'coc-yaml',
+		\ 'coc-toml',
+		\ 'coc-rust-analyzer',
+		\ 'coc-pyright',
+		\ 'coc-markdownlint',
+		\ 'coc-json',
+		\ 'coc-snippets',
+		\ ]
+
 " Plugins
 call plug#begin('~/.vim/plugged')
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install() } }
 Plug 'github/copilot.vim'
 Plug 'preservim/nerdtree'
 Plug 'morhetz/gruvbox'
@@ -27,6 +40,9 @@ call plug#end()
 
 " Reload config:
 command! RC source $MYVIMRC
+
+" Recursive ctag lookup:
+set tags+=./tags;/
 
 " Python:
 let python3_host_prog='/home/jb/.miniconda/envs/nvim_env/bin/python3'
