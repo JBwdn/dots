@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Simple timer script with desktop notifications
+
+duration=$1
+
+if [ -z "$2" ]; then
+    msg="Timer finished"
+else
+    msg="${@:2}"
+fi
+
+sleep $duration && notify-send "$msg" &
