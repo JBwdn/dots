@@ -2,12 +2,28 @@
 
 # Simple timer script with desktop notifications
 
-duration=$1
+
+# Parse s, m, h from last symbol of duration
+duration_arg=$1
+numeric_duration=${duration_arg::-1}
+last_symbol=${duration_arg: -1}
+
+if [ "$last_symbol" == "s" ]; then
+    duration=$numeric_duration
+elif [ "$last_symbol" == "m" ]; then
+    duration=$((numeric_duration * 60))
+elif [ "$last_symbol" == "h" ]; then
+    duration=$((numeric_duration * 60 * 60))
+else 
+    duration=$duration_arg
+fi
 
 if [ -z "$2" ]; then
     msg="Timer finished"
 else
     msg="${@:2}"
 fi
+
+echo Starting $duration_arg timer \($duration s\)
 
 sleep $duration && notify-send "$msg" &

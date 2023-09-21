@@ -1,0 +1,53 @@
+#! /usr/bin/env bash
+
+# Download a whole youtube channel or playlist as mp3 files
+
+# Usage: dump_yt_mp3 [channel|playlist] <url>
+
+
+# Check if yt-dlp is installed
+if ! command -v yt-dlp &> /dev/null
+then
+    echo "yt-dlp could not be found"
+    echo "Install using 'pip install yt-dlp'"
+fi
+
+# Check if ffmpeg is installed
+if ! command -v ffmpeg &> /dev/null
+then
+    echo "ffmpeg could not be found"
+    echo "Install using 'sudo apt install ffmpeg'"
+    exit
+fi
+
+# Parse mode
+if [ "$1" == "channel" ]
+then
+    URL=$2
+		# Check URL ends with /videos
+		if [[ ! $URL == */videos ]]
+		then
+			echo "Channel url must end with /videos, exiting..."
+			exit
+		fi
+elif [ "$1" == "playlist" ]
+then
+    URL=$2
+		# Check 'playlist' is in the URL
+		if [[ ! $URL == *playlist* ]]
+		then
+			echo "Playlist url must contain 'playlist', exiting..."
+			exit
+		fi
+else
+    echo "Usage: dump_yt_mp3 [channel|playlist] <url>"
+    exit
+fi
+
+
+yt-dlp -f best -x --audio-format mp3 -ciw $URL
+#
+# -f 
+# -x -> extract audio
+# --audio-format mp3 -> convert to mp3
+# -ciw -> continue on errors, ignore errors, write info to log file
