@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+# Pomodoro timer - Jake Bowden 04/19
+
+import time
+
+P = 0
+
+while __name__ == "__main__":
+    print("Pomodoros this session:", P)
+    mode = ""
+    t = 0
+
+    # Collect timer setting:
+    while mode not in ["p", "s", "l", "q"]:
+        mode = str.lower(input("(P)omodoro/(S)hort/(L)ong/(Q)uit?:"))
+
+    # Set time:
+
+    if mode == "p":
+        t = 25
+        P += 1
+
+    elif mode == "s":
+        t = 5
+
+    elif mode == "l":
+        t = 10
+
+    elif mode == "q":
+        exit(0)
+
+    # Reset and run timer:
+    print("Minutes Remaining:", end=" ", flush=True)
+    mins = 0
+
+    while mins < t:
+        print(t - mins, end=" ", flush=True)
+        time.sleep(60)
+        mins += 1
+
+    # Play sound:
+    print("\a")
