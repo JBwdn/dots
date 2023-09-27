@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+"""
+Start/stop AWS EC2 instances via SSH config.
+
+EC2 hosts must have '#EC2' and '#Region' in their ssh config entries.
+Example:
+
+```
+Host my-ec2-host
+    HostName <ip_addr>
+    #EC2 i-1234567890abcdef0
+    #Region us-east-1
+    User ubuntu
+    ...
+```
+
+Usage:
+
+```bash
+ec2 <host name> <start|stop|status>
+```
+
+TODO: Add a 'list' command to list all EC2 hosts?
+TODO: Print a status table to see which hosts are running/stopped?
+"""
+
+import argparse
+import os
+import subprocess
+from typing import Dict
+
+cmds = {
+    "start": "aws --region {region} ec2 start-instances --instance-ids {instance_id}",
+    "stop": "aws --region {region} ec2 stop-instances --instance-ids {instance_id}",
+    "status": "aws --region {region} ec2 describe-instances --instance-ids {instance_id}",
+}
+
+
+def parse_ssh_config() -> Dict[str, Dict[str, str]]:
+    """
+    Parse the user ssh config file into a dictionary.
+
+    TODO: This is a very naive implementation.
+
+    Args:
+        None
+    Returns:
+        Dict[str, Dict[str, str]]: A dictionary of host names to ssh config options.
+    """
+
+    ssh_config_file = os.path.expanduser("~/.ssh/config")
+
+    with open(ssh_config_file) as f:
+        last_host = None
+        host_2_options = {}
+
+        for line in f.readlines():
+            if not line.strip():
+                continue
+            elif line.startswith("Host"):
+                host = line.split()[1]
+                host_2_options[host] = {}
+                last_host = host
+            else:
+                option = line.split()[0]
+                value = line.split()[1]  # can values contain spaces?
+                host_2_options[last_host][option] = value
+
+    return host_2_options
+
+
+def parse_cli() -> argparse.Namespace:
+    """
+    Parse the EC2 host and command from the CLI.
+
+    Args:
+        None
+    Returns:
+        argparse.Namespace: The parsed CLI arguments.
+    """
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("host", type=str)
+    parser.add_argument("cmd", type=str, choices=cmds.keys())
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    ssh_config = parse_ssh_config()
+    args = parse_cli()
+
+    hosts = ssh_config.keys()
+    assert args.host in hosts, f"Host {args.host} not in ~/.ssh/config"
+    assert "#EC2" in ssh_config[args.host].keys(), f"{args.host} has no #EC2 tag"
+    assert "#Region" in ssh_config[args.host].keys(), f"{args.host} has no #Region tag"
+
+    instance_id = ssh_config[args.host]["#EC2"]
+    region = ssh_config[args.host]["#Region"]
+
+    cmd = cmds[args.cmd].format(instance_id=instance_id, region=region)
+    output = subprocess.check_output(cmd, shell=True).decode("utf-8")
+
+    # TODO: Can we parse the output and return something readable?
+    print(output)
