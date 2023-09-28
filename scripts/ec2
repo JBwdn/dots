@@ -2,6 +2,8 @@
 """
 Start/stop AWS EC2 instances via SSH config.
 
+Depends on the AWS CLI being installed and configured <aws.amazon.com/cli/>.
+
 EC2 hosts must have '#EC2' and '#Region' in their ssh config entries.
 Example:
 
@@ -17,17 +19,26 @@ Host my-ec2-host
 Usage:
 
 ```bash
-ec2 <host name> <start|stop|status>
+ec2 <start|stop|status> <host name>
 ```
 
-TODO: Add a 'list' command to list all EC2 hosts?
-TODO: Print a status table to see which hosts are running/stopped?
 """
 
 import argparse
+import json
 import os
 import subprocess
-from typing import Dict
+import sys
+from typing import Dict, List, Tuple
+
+try:
+    from tabulate import tabulate
+except ImportError:
+    print(
+        "Please install tabulate to use this script. pip install tabulate",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 cmds = {
     "start": "aws --region {region} ec2 start-instances --instance-ids {instance_id}",
@@ -50,18 +61,21 @@ def parse_ssh_config() -> Dict[str, Dict[str, str]]:
 
     ssh_config_file = os.path.expanduser("~/.ssh/config")
 
-    with open(ssh_config_file) as f:
+    with open(ssh_config_file, mode="r", encoding="utf-8") as file:
         last_host = None
-        host_2_options = {}
+        host_2_options = {}  # type: Dict[str, Dict[str, str]]
 
-        for line in f.readlines():
+        for line in file.readlines():
             if not line.strip():
                 continue
-            elif line.startswith("Host"):
+
+            if line.startswith("Host"):
                 host = line.split()[1]
                 host_2_options[host] = {}
                 last_host = host
+
             else:
+                assert last_host is not None, "No hosts found in ssh config file"
                 option = line.split()[0]
                 value = line.split()[1]  # can values contain spaces?
                 host_2_options[last_host][option] = value
@@ -80,14 +94,71 @@ def parse_cli() -> argparse.Namespace:
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("host", type=str)
-    parser.add_argument("cmd", type=str, choices=cmds.keys())
+    subparsers = parser.add_subparsers(dest="cmd")
+    subparsers.required = True
+
+    subparsers.add_parser("status", help="Print the status of all EC2 hosts")
+
+    startparser = subparsers.add_parser("start", help="Start an EC2 host")
+    startparser.add_argument(
+        "host", type=str, help="The EC2 host name from ~/.ssh/config"
+    )
+
+    stopparser = subparsers.add_parser("stop", help="Stop an EC2 host")
+    stopparser.add_argument(
+        "host", type=str, help="The EC2 host name from ~/.ssh/config"
+    )
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def status_table(ssh_config: Dict[str, Dict[str, str]]) -> str:
+    """
+    Print a table of the status of each known EC2 host.
+
+    Args:
+        ssh_config (Dict[str, Dict[str, str]]): The parsed ssh config file.
+    Returns:
+        None
+    """
+
+    ec2_hosts = [
+        host for host in ssh_config.keys() if "#EC2" in ssh_config[host].keys()
+    ]
+    assert len(ec2_hosts) > 0, "No EC2 hosts found in ~/.ssh/config"
+
+    table = []  # type: List[Tuple[str, str, str, str]]
+
+    for host in ec2_hosts:
+        ec2_id = ssh_config[host]["#EC2"]
+        region = ssh_config[host]["#Region"]
+
+        cmd = cmds["status"].format(instance_id=ec2_id, region=region)
+        status = subprocess.check_output(cmd, shell=True).decode("utf-8")
+
+        status = json.loads(status)
+        status = status["Reservations"][0]["Instances"][0]["State"]["Name"]
+        table.append((host, ec2_id, region, status))
+
+    return "\n" + tabulate(table, headers=["Host", "EC2 ID", "Region", "State"]) + "\n"
+
+
+def main() -> None:
+    """
+    Parse the SSH config file and cli, then execute the command.
+
+    Args:
+        None
+    Returns:
+        None
+    """
+
     ssh_config = parse_ssh_config()
     args = parse_cli()
+
+    if args.cmd == "status":
+        output = status_table(ssh_config)
+        print(output)
+        sys.exit(0)
 
     hosts = ssh_config.keys()
     assert args.host in hosts, f"Host {args.host} not in ~/.ssh/config"
@@ -98,7 +169,28 @@ if __name__ == "__main__":
     region = ssh_config[args.host]["#Region"]
 
     cmd = cmds[args.cmd].format(instance_id=instance_id, region=region)
-    output = subprocess.check_output(cmd, shell=True).decode("utf-8")
+    status = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
-    # TODO: Can we parse the output and return something readable?
+    status = json.loads(status)
+    if args.cmd == "start":
+        key = "StartingInstances"
+    else:
+        key = "StoppingInstances"
+
+    from_status = status[key][0]["PreviousState"]["Name"]
+    to_status = status[key][0]["CurrentState"]["Name"]
+
+    output = (
+        "\n"
+        + tabulate(
+            [(args.host, instance_id, region, from_status, to_status)],
+            headers=["Host", "EC2 ID", "Region", "Previous state", "Current state"],
+        )
+        + "\n"
+    )
     print(output)
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
