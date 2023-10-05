@@ -36,6 +36,8 @@ alias ga="git add"
 alias gc="git commit"
 alias gcom="git commit -m"
 
+alias pc="pre-commit run --all-files"
+
 # Functions:
 function peco-hist(){
 local tac

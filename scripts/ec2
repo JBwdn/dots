@@ -97,21 +97,30 @@ def parse_cli() -> argparse.Namespace:
     subparsers = parser.add_subparsers(dest="cmd")
     subparsers.required = True
 
-    subparsers.add_parser("status", help="Print the status of all EC2 hosts")
+    status_parser = subparsers.add_parser(
+        "status", help="Print the status of all EC2 hosts"
+    )
+    status_parser.add_argument(
+        "host",
+        type=str,
+        help="The EC2 host name from ~/.ssh/config",
+        default=None,
+        nargs="?",
+    )
 
-    startparser = subparsers.add_parser("start", help="Start an EC2 host")
-    startparser.add_argument(
+    start_parser = subparsers.add_parser("start", help="Start an EC2 host")
+    start_parser.add_argument(
         "host", type=str, help="The EC2 host name from ~/.ssh/config"
     )
 
-    stopparser = subparsers.add_parser("stop", help="Stop an EC2 host")
-    stopparser.add_argument(
+    stop_parser = subparsers.add_parser("stop", help="Stop an EC2 host")
+    stop_parser.add_argument(
         "host", type=str, help="The EC2 host name from ~/.ssh/config"
     )
     return parser.parse_args()
 
 
-def status_table(ssh_config: Dict[str, Dict[str, str]]) -> str:
+def status_table(ssh_config: Dict[str, Dict[str, str]], host: str | None = None) -> str:
     """
     Print a table of the status of each known EC2 host.
 
@@ -121,10 +130,13 @@ def status_table(ssh_config: Dict[str, Dict[str, str]]) -> str:
         None
     """
 
-    ec2_hosts = [
-        host for host in ssh_config.keys() if "#EC2" in ssh_config[host].keys()
-    ]
-    assert len(ec2_hosts) > 0, "No EC2 hosts found in ~/.ssh/config"
+    if not host:
+        ec2_hosts = [
+            host for host in ssh_config.keys() if "#EC2" in ssh_config[host].keys()
+        ]
+        assert len(ec2_hosts) > 0, "No EC2 hosts found in ~/.ssh/config"
+    else:
+        ec2_hosts = [host]
 
     table = []  # type: List[Tuple[str, str, str, str]]
 
@@ -155,15 +167,19 @@ def main() -> None:
     ssh_config = parse_ssh_config()
     args = parse_cli()
 
+    hosts = ssh_config.keys()
+
+    if args.host:
+        assert args.host in hosts, f"Host {args.host} not in ~/.ssh/config"
+        assert "#EC2" in ssh_config[args.host].keys(), f"{args.host} has no #EC2 tag"
+        assert (
+            "#Region" in ssh_config[args.host].keys()
+        ), f"{args.host} has no #Region tag"
+
     if args.cmd == "status":
-        output = status_table(ssh_config)
+        output = status_table(ssh_config, host=args.host)
         print(output)
         sys.exit(0)
-
-    hosts = ssh_config.keys()
-    assert args.host in hosts, f"Host {args.host} not in ~/.ssh/config"
-    assert "#EC2" in ssh_config[args.host].keys(), f"{args.host} has no #EC2 tag"
-    assert "#Region" in ssh_config[args.host].keys(), f"{args.host} has no #Region tag"
 
     instance_id = ssh_config[args.host]["#EC2"]
     region = ssh_config[args.host]["#Region"]
