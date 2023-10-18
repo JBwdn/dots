@@ -23,7 +23,6 @@ let g:coc_global_extensions = [
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install() } }
 Plug 'github/copilot.vim'
-" Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
 Plug 'preservim/nerdtree'
 Plug 'morhetz/gruvbox'
 Plug 'ryanoasis/vim-devicons'
@@ -38,6 +37,11 @@ Plug 'radenling/vim-dispatch-neovim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'tmhedberg/SimpylFold'
 Plug 'honza/vim-snippets'
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+" Keep an eye on this until autocomplete is fixed:
+" Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
 call plug#end()
 
 " Reload config:
@@ -208,3 +212,10 @@ let g:SimpylFold_fold_import=0
 imap <C-l> <Plug>(coc-snippets-expand)
 let g:coc_snippet_next = '<tab>'
 let g:coc_snippet_prev = '<s-tab>'
+
+" Telescope (fuzzy finder):
+nnoremap ff <cmd>Telescope find_files<cr>
+nnoremap fg <cmd>Telescope live_grep<cr>
+nnoremap ft <cmd>Telescope tags<cr>
+nnoremap fb <cmd>Telescope buffers<cr>
+nnoremap fh <cmd>Telescope help_tags<cr>
