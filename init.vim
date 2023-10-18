@@ -23,6 +23,7 @@ let g:coc_global_extensions = [
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install() } }
 Plug 'github/copilot.vim'
+" Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
 Plug 'preservim/nerdtree'
 Plug 'morhetz/gruvbox'
 Plug 'ryanoasis/vim-devicons'
@@ -44,6 +45,9 @@ command! RC source $MYVIMRC
 " Recursive ctag lookup:
 set tags+=./tags;/
 
+" Escape terminal:
+tnoremap <Esc> <C-\><C-n>
+
 " Python:
 let python3_host_prog='/home/jb/.miniconda/envs/nvim_env/bin/python3'
 
@@ -63,6 +67,24 @@ noremap <F5> :IPYREPL<CR>
 autocmd FileType python vmap <CR> y<C-w>wpa<CR><C-\><C-n><C-w>p
 " Send current line to repl in normal mode
 autocmd FileType python nmap <CR> Vy<C-w>wpa<CR><C-\><C-n><C-w>pj
+
+" Julia (TO BE TESTED FULLY)
+autocmd FileType julia map <buffer> <F7> :w<CR>:exec 'Dispatch julia' shellescape(@%, 1)<CR>
+autocmd FileType julia imap <buffer> <F7> <esc>:w<CR>:exec 'Dispatch julia' shellescape(@%, 1)<CR>
+autocmd FileType julia map <buffer> <F8> :w<CR>:exec 'Dispatch! julia-format' shellescape(@%, 1)<CR>
+autocmd FileType julia imap <buffer> <F8> <esc>:w<CR>:exec 'Dispatch! julia-format' shellescape(@%, 1)<CR>
+autocmd FileType julia map <buffer> <F9> :w<CR>:exec 'Dispatch julia -e "using Revise; Revise.includet(\"' . shellescape(@%, 1) . '\")"'<CR>
+autocmd FileType julia imap <buffer> <F9> <esc>:w<CR>:exec 'Dispatch julia -e "using Revise; Revise.includet(\"' . shellescape(@%, 1) . '\")"'<CR>
+autocmd FileType julia map <buffer> <F10> :w<CR>:exec 'Dispatch julia -e "using Pkg; Pkg.test(\"' . shellescape(@%, 1) . '\")"'<CR>
+autocmd FileType julia imap <buffer> <F10> <esc>:w<CR>:exec 'Dispatch julia -e "using Pkg; Pkg.test(\"' . shellescape(@%, 1) . '\")"'<CR>
+
+" Julia REPL:
+command! JULIAREPL :vsplit | wincmd l | terminal julia
+autocmd FileType julia map <F5> :JULIAREPL<CR>
+" Send visual mode selection to repl
+autocmd FileType julia vmap <CR> y<C-w>wpa<CR><C-\><C-n><C-w>p
+" Send current line to repl in normal mode
+autocmd FileType julia nmap <CR> Vy<C-w>wpa<CR><C-\><C-n><C-w>pj
 
 " Rust:
 autocmd FileType rust map <buffer> <F7> :w<CR>:exec '!cargo run'<CR>
@@ -96,7 +118,7 @@ vno <silent> <A-j> :m '>+1<CR>gv=gv
 vno <silent> <A-k> :m '<-2<CR>gv=gv
 
 " Tab rendering
-set tabstop=4
+set tabstop=2
 set autoindent
 
 " Editor
