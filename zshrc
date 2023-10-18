@@ -20,6 +20,7 @@ alias c=clear
 alias vi=nvim
 alias h="cd $HOME; ls"
 alias t="exa -T -L 2"
+alias t3="exa -T -L 3"
 alias rm="trash"
 alias clip="xclip -sel c < "
 alias ssh_fwd="eval $(ssh-agent -s) ; ssh-add ~/.ssh/id_ed25519"
@@ -37,6 +38,7 @@ alias gc="git commit"
 alias gcom="git commit -m"
 
 alias pc="pre-commit run --all-files"
+alias ct="ctags -R ."
 
 # Functions:
 function peco-hist(){
@@ -53,7 +55,9 @@ zle -N peco-hist
 bindkey '^R' peco-hist
 
 function coa(){
-conda activate $(conda env list | tail -n +3 | awk '{print $1;}' | peco --prompt 'Conda Activate:')
+env=$(conda env list | tail -n +3 | awk '{print $1;}' | peco --prompt 'Conda Activate:')
+conda activate $env
+CONDA_DEFAULT_ENV=$env
 }
 
 function csv(){
