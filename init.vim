@@ -47,6 +47,10 @@ call plug#end()
 " Reload config:
 command! RC source $MYVIMRC
 
+" Run pre-commit:
+command! PreCommit :Dispatch pre-commit run --all-files
+command! PC :PreCommit
+
 " Recursive ctag lookup:
 set tags+=./tags;/
 
