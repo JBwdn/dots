@@ -22,7 +22,6 @@ let g:coc_global_extensions = [
 " Plugins
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install() } }
-Plug 'github/copilot.vim'
 Plug 'preservim/nerdtree'
 Plug 'morhetz/gruvbox'
 Plug 'ryanoasis/vim-devicons'
@@ -40,6 +39,7 @@ Plug 'honza/vim-snippets'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'github/copilot.vim'
 " Keep an eye on this until autocomplete is fixed:
 " Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
 call plug#end()
