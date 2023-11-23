@@ -39,13 +39,14 @@ Plug 'honza/vim-snippets'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-Plug 'github/copilot.vim'
+Plug 'airblade/vim-gitgutter'
 " Keep an eye on this until autocomplete is fixed:
 " Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
 call plug#end()
 
 " Reload config:
-command! RC source $MYVIMRC
+command! ReloadConfig :source $MYVIMRC
+command! RC :ReloadConfig
 
 " Run pre-commit:
 command! PreCommit :Dispatch pre-commit run --all-files
