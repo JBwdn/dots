@@ -64,10 +64,10 @@ let python3_host_prog='/home/jb/.miniconda/envs/nvim_env/bin/python3'
 
 autocmd FileType python map <buffer> <F7> :w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F7> <esc>:w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
-autocmd FileType python map <buffer> <F8> :w<CR>:exec 'Dispatch! black' shellescape(@%, 1)<CR>q
-autocmd FileType python imap <buffer> <F8> <esc>:w<CR>:exec 'Dispatch! black' shellescape(@%, 1)<CR>q
-autocmd FileType python map <buffer> <F9> :w<CR>:exec 'Dispatch mypy' shellescape(@%, 1)<CR>
-autocmd FileType python imap <buffer> <F9> <esc>:w<CR>:exec 'Dispatch mypy' shellescape(@%, 1)<CR>
+autocmd FileType python map <buffer> <F8> :w<CR>:exec 'Dispatch! black %; isort %'<CR>q
+autocmd FileType python imap <buffer> <F8> <esc>:w<CR>:exec 'Dispatch! black %; isort %'<CR>q
+autocmd FileType python map <buffer> <F9> :w<CR>:exec 'Dispatch pyright' shellescape(@%, 1)<CR>
+autocmd FileType python imap <buffer> <F9> <esc>:w<CR>:exec 'Dispatch pyright' shellescape(@%, 1)<CR>
 autocmd FileType python map <buffer> <F10> :w<CR>:exec 'Dispatch pylint' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F10> <esc>:w<CR>:exec 'Dispatch pylint' shellescape(@%, 1)<CR>
 
@@ -76,8 +76,11 @@ command! IPYREPL :vsplit | wincmd l | terminal ipython
 noremap <F5> :IPYREPL<CR>
 " Send visual mode selection to repl
 autocmd FileType python vmap <CR> y<C-w>wpa<CR><C-\><C-n><C-w>p
+
 " Send current line to repl in normal mode
-autocmd FileType python nmap <CR> Vy<C-w>wpa<CR><C-\><C-n><C-w>pj
+" Below needs work as its too easy to accidentally send the lines back from
+" the REPL
+" autocmd FileType python nmap <CR> Vy<C-w>wpa<CR><C-\><C-n><C-w>pj
 
 " Julia (TO BE TESTED FULLY)
 autocmd FileType julia map <buffer> <F7> :w<CR>:exec 'Dispatch julia' shellescape(@%, 1)<CR>
@@ -95,7 +98,7 @@ autocmd FileType julia map <F5> :JULIAREPL<CR>
 " Send visual mode selection to repl
 autocmd FileType julia vmap <CR> y<C-w>wpa<CR><C-\><C-n><C-w>p
 " Send current line to repl in normal mode
-autocmd FileType julia nmap <CR> Vy<C-w>wpa<CR><C-\><C-n><C-w>pj
+" autocmd FileType julia nmap <CR> Vy<C-w>wpa<CR><C-\><C-n><C-w>pj
 
 " Rust:
 autocmd FileType rust map <buffer> <F7> :w<CR>:exec '!cargo run'<CR>
