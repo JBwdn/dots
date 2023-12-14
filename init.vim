@@ -228,3 +228,6 @@ nnoremap fg <cmd>Telescope live_grep<cr>
 nnoremap ft <cmd>Telescope tags<cr>
 nnoremap fb <cmd>Telescope buffers<cr>
 nnoremap fh <cmd>Telescope help_tags<cr>
+
+" Italic comments:
+highlight Comment cterm=italic
