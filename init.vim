@@ -63,8 +63,8 @@ let python3_host_prog='/home/jb/.miniconda/envs/nvim_env/bin/python3'
 
 autocmd FileType python map <buffer> <F7> :w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F7> <esc>:w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
-autocmd FileType python map <buffer> <F8> :w<CR>:exec 'Dispatch! black' shellescape(@%, 1)<CR>q
-autocmd FileType python imap <buffer> <F8> <esc>:w<CR>:exec 'Dispatch! black' shellescape(@%, 1)<CR>q
+autocmd FileType python map <buffer> <F8> :w<CR>:exec 'Dispatch! black %; isort %'<CR>q
+autocmd FileType python imap <buffer> <F8> <esc>:w<CR>:exec 'Dispatch! black %; isort %'<CR>q
 autocmd FileType python map <buffer> <F9> :w<CR>:exec 'Dispatch pyright' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F9> <esc>:w<CR>:exec 'Dispatch pyright' shellescape(@%, 1)<CR>
 autocmd FileType python map <buffer> <F10> :w<CR>:exec 'Dispatch pylint' shellescape(@%, 1)<CR>
