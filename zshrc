@@ -11,6 +11,10 @@ export SCREENDIR=$HOME/.screen
 # Add scripts dir to path:
 export PATH="$HOME/Scripts:$PATH"
 
+# binds:
+EDITOR=nvim
+bindkey '\C-e' edit-command-line
+
 # Aliases:
 alias x=exit
 alias p=python3
@@ -48,15 +52,20 @@ if which tac > /dev/null; then
 else
 	tac="tail -r"
 fi
-BUFFER=$(history -1000 | eval $tac | cut -c 8- | peco --query "$LBUFFER")
+BUFFER=$(history -1000 | eval $tac | cut -c 8- | fzf --query "$LBUFFER")
 CURSOR=$#BUFFER
 }
 zle -N peco-hist
 bindkey '^R' peco-hist
 
 function coa(){
-env=$(conda env list | tail -n +3 | awk '{print $1;}' | peco --prompt 'Conda Activate:')
-conda activate $env
+mamba deactivate
+if [ -z "$1" ]; then
+	env=$(mamba env list | tail -n +3 | awk '{print $1;}' | fzf --prompt 'Mamba Activate:')
+else
+	env=$1
+fi
+mamba activate $env
 CONDA_DEFAULT_ENV=$env
 }
 
