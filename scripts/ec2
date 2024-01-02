@@ -31,6 +31,8 @@ import subprocess
 import sys
 from typing import Dict, List, Tuple
 
+from termcolor import colored
+
 try:
     from tabulate import tabulate
 except ImportError:
@@ -97,9 +99,7 @@ def parse_cli() -> argparse.Namespace:
     subparsers = parser.add_subparsers(dest="cmd")
     subparsers.required = True
 
-    status_parser = subparsers.add_parser(
-        "status", help="Print the status of all EC2 hosts"
-    )
+    status_parser = subparsers.add_parser("status", help="Print the status of all EC2 hosts")
     status_parser.add_argument(
         "host",
         type=str,
@@ -109,14 +109,10 @@ def parse_cli() -> argparse.Namespace:
     )
 
     start_parser = subparsers.add_parser("start", help="Start an EC2 host")
-    start_parser.add_argument(
-        "host", type=str, help="The EC2 host name from ~/.ssh/config"
-    )
+    start_parser.add_argument("host", type=str, help="The EC2 host name from ~/.ssh/config")
 
     stop_parser = subparsers.add_parser("stop", help="Stop an EC2 host")
-    stop_parser.add_argument(
-        "host", type=str, help="The EC2 host name from ~/.ssh/config"
-    )
+    stop_parser.add_argument("host", type=str, help="The EC2 host name from ~/.ssh/config")
     return parser.parse_args()
 
 
@@ -131,27 +127,35 @@ def status_table(ssh_config: Dict[str, Dict[str, str]], host: str | None = None)
     """
 
     if not host:
-        ec2_hosts = [
-            host for host in ssh_config.keys() if "#EC2" in ssh_config[host].keys()
-        ]
+        ec2_hosts = [host for host in ssh_config.keys() if "#EC2" in ssh_config[host].keys()]
         assert len(ec2_hosts) > 0, "No EC2 hosts found in ~/.ssh/config"
     else:
         ec2_hosts = [host]
 
-    table = []  # type: List[Tuple[str, str, str, str]]
+    details = []  # type: List[Tuple[str, ...]]
 
     for host in ec2_hosts:
         ec2_id = ssh_config[host]["#EC2"]
         region = ssh_config[host]["#Region"]
+        ip = ssh_config[host]["HostName"]
 
         cmd = cmds["status"].format(instance_id=ec2_id, region=region)
-        status = subprocess.check_output(cmd, shell=True).decode("utf-8")
+        desc = subprocess.check_output(cmd, shell=True).decode("utf-8")
+        desc = json.loads(desc)
 
-        status = json.loads(status)
-        status = status["Reservations"][0]["Instances"][0]["State"]["Name"]
-        table.append((host, ec2_id, region, status))
+        status = desc["Reservations"][0]["Instances"][0]["State"]["Name"]
+        i_type = desc["Reservations"][0]["Instances"][0]["InstanceType"]
+        cpu_n = desc["Reservations"][0]["Instances"][0]["CpuOptions"]["CoreCount"]
 
-    return "\n" + tabulate(table, headers=["Host", "EC2 ID", "Region", "State"]) + "\n"
+        details.append((host, ec2_id, ip, i_type, cpu_n, region, status))
+
+    table = tabulate(
+        details, headers=["Host", "EC2 ID", "Ip addr.", "Type", "CPUs", "Region", "State"]
+    )
+    table = table.replace("running", colored("running", "green"))
+    table = table.replace("stopped", colored("stopped", "red"))
+
+    return "\n" + table + "\n"
 
 
 def main() -> None:
@@ -172,9 +176,7 @@ def main() -> None:
     if args.host:
         assert args.host in hosts, f"Host {args.host} not in ~/.ssh/config"
         assert "#EC2" in ssh_config[args.host].keys(), f"{args.host} has no #EC2 tag"
-        assert (
-            "#Region" in ssh_config[args.host].keys()
-        ), f"{args.host} has no #Region tag"
+        assert "#Region" in ssh_config[args.host].keys(), f"{args.host} has no #Region tag"
 
     if args.cmd == "status":
         output = status_table(ssh_config, host=args.host)
