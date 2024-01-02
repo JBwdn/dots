@@ -40,6 +40,9 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'airblade/vim-gitgutter'
+Plug 'github/copilot.vim'
+Plug 'sindrets/diffview.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
 " Keep an eye on this until autocomplete is fixed:
 " Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
 call plug#end()
@@ -223,3 +226,7 @@ nnoremap fh <cmd>Telescope help_tags<cr>
 
 " Italic comments:
 highlight Comment cterm=italic
+
+" Diff view:
+nnoremap <silent> <C-D> :DiffviewOpen<CR>
+nnoremap <silent> <C-C> :DiffviewClose<CR>
