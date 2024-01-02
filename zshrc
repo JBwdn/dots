@@ -17,6 +17,7 @@ bindkey '\C-e' edit-command-line
 
 # Aliases:
 alias x=exit
+alias ":q"=exit
 alias p=python3
 alias i=ipython
 alias j=julia
@@ -31,11 +32,15 @@ alias ssh_fwd="eval $(ssh-agent -s) ; ssh-add ~/.ssh/id_ed25519"
 alias dots="vi $HOME/dots/"
 alias pyloc="git ls-files | grep '.py' | xargs wc -l"
 
+alias mm="micromamba"
+alias mamba="micromamba"
+alias conda="micromamba"
+
 alias L="screen -ls"
 alias S="screen -R"
 
-alias cod="conda deactivate"
-alias cos="conda deactivate; coa"
+alias cod="micromamba deactivate"
+alias cos="micromamba deactivate; coa"
 
 alias ga="git add"
 alias gc="git commit"
@@ -52,21 +57,20 @@ if which tac > /dev/null; then
 else
 	tac="tail -r"
 fi
-BUFFER=$(history -1000 | eval $tac | cut -c 8- | fzf --query "$LBUFFER")
+BUFFER=$(history -5000 | eval $tac | cut -c 8- | fzf --query "$LBUFFER")
 CURSOR=$#BUFFER
 }
 zle -N peco-hist
 bindkey '^R' peco-hist
 
 function coa(){
-mamba deactivate
+micromamba deactivate
 if [ -z "$1" ]; then
-	env=$(mamba env list | tail -n +3 | awk '{print $1;}' | fzf --prompt 'Mamba Activate:')
+	env=$(micromamba env list | tail -n +3 | awk '{print $1;}' | fzf --prompt 'Mamba Activate:')
 else
 	env=$1
 fi
-mamba activate $env
-CONDA_DEFAULT_ENV=$env
+micromamba activate $env
 }
 
 function csv(){
