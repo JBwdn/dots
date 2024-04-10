@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+
+import argparse
+import calendar
+import datetime
+import sys
+
+
+def parse_cli() -> argparse.Namespace:
+    this_month = datetime.datetime.now().month
+    this_year = datetime.datetime.now().year
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-m", "--month", type=int, default=this_month, help="Month to display (int, 1-12)"
+    )
+    parser.add_argument(
+        "-y", "--year", type=int, default=this_year, help="Year to display (int, 20XX or XX)"
+    )
+    parser.add_argument("-w", "--whole", action="store_true", help="Display the whole year")
+
+    return parser.parse_args()
+
+
+def main():
+    args = parse_cli()
+
+    assert 0 < args.month < 13, "Month argument must be: 0 < X < 13"
+    assert len(str(args.year)) in [2, 4], "Year argument must be: YY or YYYY"
+
+    if args.whole:
+        sys.stdout.write(calendar.calendar(args.year))
+    else:
+        sys.stdout.write(calendar.month(args.year, args.month))
+
+
+if __name__ == "__main__":
+    main()

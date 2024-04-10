@@ -62,7 +62,7 @@ set tags+=./tags;/
 tnoremap <Esc> <C-\><C-n>
 
 " Python:
-let python3_host_prog='/home/jb/.miniconda/envs/nvim_env/bin/python3'
+let python3_host_prog='/home/jb/micromamba/envs/nvim/bin/python'
 
 autocmd FileType python map <buffer> <F7> :w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F7> <esc>:w<CR>:exec 'Dispatch python3' shellescape(@%, 1)<CR>
@@ -102,8 +102,8 @@ autocmd FileType rust map <buffer> <F8> :w<CR>:exec '!cargo fmt'<CR>
 autocmd FileType rust imap <buffer> <F8> <esc>:w<CR>:exec '!cargo fmt'<CR>
 autocmd FileType rust map <buffer> <F9> :w<CR>:exec '!cargo clippy'<CR>
 autocmd FileType rust imap <buffer> <F9> <esc>:w<CR>:exec '!cargo clippy'<CR>
-autocmd FileType rust map <buffer> <F10> :w<CR>:exec '!cargo check'<CR>
-autocmd FileType rust imap <buffer> <F10> <esc>:w<CR>:exec '!cargo check'<CR>
+autocmd FileType rust map <buffer> <F10> :w<CR>:exec '!cargo test'<CR>
+autocmd FileType rust imap <buffer> <F10> <esc>:w<CR>:exec '!cargo test'<CR>
 
 " Bash:
 autocmd FileType sh map <buffer> <F7> :w<CR>:exec 'Dispatch bash' shellescape(@%, 1)<CR>

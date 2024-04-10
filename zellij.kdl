@@ -1,0 +1,80 @@
+default_layout "compact"
+on_force_close "detach"
+pane_frames true
+simplified_ui true
+scrollback_editor "nvim -u scrollback.lua"
+
+theme "kanagawa"
+
+keybinds clear-defaults=true {
+	normal {
+		bind "`" { SwitchToMode "tmux"; }
+	}
+	renametab {
+		bind "Enter" { SwitchToMode "normal"; }
+		bind "Esc" { UndoRenameTab; SwitchToMode "tmux"; }
+	}
+	tmux {
+		bind "H" { NewPane "Left"; SwitchToMode "normal"; }
+		bind "J" { NewPane "Down"; SwitchToMode "normal"; }
+		bind "K" { NewPane "Up"; SwitchToMode "normal"; }
+		bind "L" { NewPane "Right"; SwitchToMode "normal"; }
+
+		bind "h" { MoveFocus "Left"; }
+		bind "j" { MoveFocus "Down"; }
+		bind "k" { MoveFocus "Up"; }
+		bind "l" { MoveFocus "Right"; }
+
+		bind "/" { EditScrollback; SwitchToMode "Normal"; }
+		bind "," { SwitchToMode "RenameTab"; TabNameInput 0; }
+		bind "[" { SwitchToMode "scroll"; }
+		bind "Enter" { SwitchToMode "normal"; }
+		bind "r" { SwitchToMode "resize"; }
+
+		bind "Space" { NextSwapLayout; }
+		bind "c" { NewTab; SwitchToMode "normal"; }
+		bind "`" { GoToNextTab; }
+		bind "o" { FocusNextPane; }
+		bind "p" { GoToPreviousTab; }
+		bind "q" { Detach; }
+		bind "x" { CloseFocus; SwitchToMode "normal"; }
+		bind "w" { ToggleFloatingPanes; SwitchToMode "normal"; }
+	}
+	resize {
+		bind "h" { Resize "Left"; }
+		bind "j" { Resize "Down"; }
+		bind "k" { Resize "Up"; }
+		bind "l" { Resize "Right"; }
+
+		bind "Enter" { SwitchToMode "normal"; }
+		bind "`" { SwitchToMode "normal"; }
+	}
+	shared_except "normal" {
+		bind "Esc" { SwitchToMode "normal"; }
+	}
+}
+
+plugins {
+}
+
+themes {
+	kanagawa {
+		fg "#DCD7BA"
+		bg "#1F1F28"
+		red "#C34043"
+		green "#76946A"
+		yellow "#FF9E3B"
+		blue "#7E9CD8"
+		magenta "#957FB8"
+		orange "#FFA066"
+		cyan "#7FB4CA"
+		black "#16161D"
+		white "#DCD7BA"
+	}
+}
+
+ui {
+	pane_frames {
+		rounded_corners true
+	}
+}

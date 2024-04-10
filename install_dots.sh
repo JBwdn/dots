@@ -52,9 +52,14 @@ install_dotfile $dots_dir/zshrc $HOME/.zshrc
 install_dotfile $dots_dir/tmux.conf $HOME/.tmux.conf
 
 mkdir -p $HOME/.config/nvim  # Create nvim config dir if it doesn't exist
-install_dotfile $dots_dir/init.vim $HOME/.config/nvim/init.vim
+install_dotfile $dots_dir/init.lua $HOME/.config/nvim/init.lua
+
+mkdir -p $HOME/.config/alacritty
+install_dotfile $dots_dir/alacritty.toml $HOME/.config/alacritty/alacritty.toml
+
+mkdir -p $HOME/.config/zellij
+install_dotfile $dots_dir/zellij.kdl $HOME/.config/zellij/config.kdl
 
 # Symlinking dirs:
 echo "Installing dirs..."
 install_dir $dots_dir/scripts/ $HOME/Scripts
-

@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+from io import StringIO
+
+import pandas as pd
+
+
+def parse_cli() -> argparse.Namespace:
+    """
+    usage: csv2md [-h] [--sep SEP] [--index] [--reindex] [--no-header]
+                  [--file FILE]
+
+    Convert .csv data into a markdown table
+
+    options:
+      -h, --help            show this help message and exit
+      --sep SEP, -s SEP     separator character used in input data
+      --index, -i           include index column in output
+      --reindex, -r         reindex the table from 1
+      --no-header, -n       input does not include header
+      --file FILE, -f FILE  path to input file. If not provided, data is read from
+                            stdin
+    """
+
+    parser = argparse.ArgumentParser(
+        prog="csv2md",
+        description="Convert .csv data into a markdown table",
+    )
+    parser.add_argument(
+        "--sep",
+        "-s",
+        type=str,
+        default=",",
+        help="separator character used in input data",
+    )
+    parser.add_argument(
+        "--index",
+        "-i",
+        action="store_true",
+        help="include index column in output",
+    )
+    parser.add_argument(
+        "--reindex",
+        "-r",
+        action="store_true",
+        help="reindex the table from 1",
+    )
+    parser.add_argument(
+        "--no-header",
+        "-n",
+        action="store_true",
+        help="input does not include header",
+    )
+    parser.add_argument(
+        "--file",
+        "-f",
+        type=str,
+        help="path to input file. If not provided, data is read from stdin",
+        default=None,
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    config = parse_cli()
+
+    if config.file is not None:
+        data = open(config.file, "r").read()
+    else:
+        data = sys.stdin.read()
+
+    df = pd.read_csv(
+        StringIO(data),
+        sep=config.sep,
+        header=None if config.no_header else 0,
+        engine="python",
+    )
+
+    if config.reindex:
+        df.index = df.index + 1
+
+    output = df.to_markdown(index=config.index)
+    assert isinstance(output, str), "Failed to convert DataFrame to markdown"
+
+    sys.stdout.write(output)
+
+
+if __name__ == "__main__":
+    main()

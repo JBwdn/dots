@@ -152,11 +152,16 @@ def status_table(ssh_config: Dict[str, Dict[str, str]], host: str | None = None)
     table = tabulate(
         details, headers=["Host", "EC2 ID", "Ip addr.", "Type", "CPUs", "Region", "State"]
     )
-    table = table.replace("running", colored("running", "green"))
-    table = table.replace("stopped", colored("stopped", "red"))
 
     return "\n" + table + "\n"
 
+def colourise_output(string:str) -> str:
+    return (
+            string.replace("running", colored("running", "green"))
+            .replace("pending", colored("pending", "yellow"))
+            .replace("stopped", colored("stopped", "red"))
+            .replace("stopping", colored("stopping", "red"))
+            )
 
 def main() -> None:
     """
@@ -180,7 +185,7 @@ def main() -> None:
 
     if args.cmd == "status":
         output = status_table(ssh_config, host=args.host)
-        print(output)
+        print(colourise_output(output))
         sys.exit(0)
 
     instance_id = ssh_config[args.host]["#EC2"]
@@ -206,7 +211,7 @@ def main() -> None:
         )
         + "\n"
     )
-    print(output)
+    print(colourise_output(output))
     sys.exit(0)
 
 
