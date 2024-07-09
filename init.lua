@@ -25,8 +25,10 @@ vim.keymap.set("t", "<esc>", "<C-\\><C-n>")
 -- Meta functions for formatting, linting and testing
 function _G.run_file()
 	local commands = {
-		python = "python %", rust = "cargo run",
+		python = "python %",
+		rust = "cargo run",
 		julia = "julia %",
+		sh = "bash %",
 	}
 	if not commands[vim.bo.filetype] then
 		print("No run command for " .. vim.bo.filetype)
@@ -144,6 +146,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Plugins
 require("lazy").setup({
+	{"xiyaowong/transparent.nvim"},
 	{
 		"airblade/vim-gitgutter",
 		event = "VeryLazy",
@@ -153,20 +156,20 @@ require("lazy").setup({
 		event = "VeryLazy",
 		dependencies = { "MunifTanjim/nui.nvim", "hrsh7th/cmp-cmdline", "rcarriga/nvim-notify" },
 	},
-	{
-		"zbirenbaum/copilot.lua",
-		config = function()
-			require("copilot").setup({})
-		end,
-		event = "VeryLazy",
-	},
-	{
-		"zbirenbaum/copilot-cmp",
-		config = function()
-			require("copilot_cmp").setup()
-		end,
-		event = "VeryLazy",
-	},
+	-- {
+	-- 	"zbirenbaum/copilot.lua",
+	-- 	config = function()
+	-- 		require("copilot").setup({})
+	-- 	end,
+	-- 	event = "VeryLazy",
+	-- },
+	-- {
+	-- 	"zbirenbaum/copilot-cmp",
+	-- 	config = function()
+	-- 		require("copilot_cmp").setup()
+	-- 	end,
+	-- 	event = "VeryLazy",
+	-- },
 	{
 		"hrsh7th/cmp-nvim-lsp",
 		event = "VeryLazy"
@@ -178,6 +181,10 @@ require("lazy").setup({
 	},
 	{
 		"L3MON4D3/LuaSnip",
+		event = "VeryLazy"
+	},
+	{
+		"saadparwaiz1/cmp_luasnip",
 		event = "VeryLazy"
 	},
 	{
@@ -238,6 +245,9 @@ require("lazy").setup({
 			vim.o.timeoutlen = 300
 		end,
 	},
+	{
+		"sourcegraph/sg.nvim",
+	},
 	-- {  --  CAN ONLY MOVE OUT NOT IN YET!
 	-- 	"https://git.sr.ht/~swaits/zellij-nav.nvim",
 	-- 	lazy = true,
@@ -252,6 +262,7 @@ require("lazy").setup({
 	-- }
 })
 
+require("sg").setup()
 
 -- Treesitter
 require("nvim-treesitter.configs").setup {
@@ -293,18 +304,19 @@ cmp.setup({
 		{ name = "buffer" },
 		{ name = "path" },
 		{ name = "luasnip" },
-		{ name = "copilot" },
+		-- { name = "copilot" },
+		{ name = "cody"},
 	},
 })
 
 -- Copilot
-local copilot = require("copilot")
-copilot.setup({
-	suggestion = { enabled = false },
-	panel = { enabled = false },
-	filetypes = { ["*"] = true },
-})
-vim.cmd("Copilot disable")
+-- local copilot = require("copilot")
+-- copilot.setup({
+-- 	suggestion = { enabled = false },
+-- 	panel = { enabled = false },
+-- 	filetypes = { ["*"] = true },
+-- })
+-- vim.cmd("Copilot disable")
 
 
 -- LSP
@@ -368,14 +380,7 @@ wk.register({
 	[";"] = { "Command palette" }, -- Defined elsewhere...
 	[","] = { "<cmd>tabnew|edit $MYVIMRC<CR>", "Edit config" },
 	["<leader>"] = { "<Esc>", "Esc" },
-	c = {
-		name = "copilot",
-		e = { "<cmd>Copilot enable<CR>", "Enable" },
-		d = { "<cmd>Copilot disable<CR>", "Disable" },
-		p = { "<cmd>Copilot panel<CR>", "Panel" },
-		r = { "<cmd>Copilot restart<CR>", "Restart" },
-		v = { "<cmd>Copilot version<CR>", "Version" },
-	},
+	["c"] = { "<cmd>CodyChat<CR>", "Cody" },
 	f = {
 		name = "find",
 		f = { "<cmd>Telescope find_files<CR>", "Files" },
@@ -514,13 +519,13 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.opt.number = true
 vim.opt.list = true
 vim.opt.listchars = {
-	["eol"] = "⤶",
+	["eol"] = "⏎",
 	["tab"] = "│·",
 	["trail"] = "~",
 	["space"] = "·",
 }
 vim.opt.termguicolors = true
-vim.cmd("colorscheme kanagawa-wave")
+vim.cmd("colorscheme kanagawa-lotus")
 
 
 -- Gui:

@@ -1,0 +1,199 @@
+#!/usr/bin/env python
+"""
+'not' is a markdown format notes management system.
+Pure python except for fzf used in the 'search' subcommand.
+"""
+
+import argparse
+import datetime
+import json
+import subprocess
+from pathlib import Path
+
+CONFIG_PATH = Path.home() / ".not.json"
+TEMPLATES = {
+    "basic": "{yaml_header}\n\n## {title}\n",
+    "todo": "{yaml_header}\n\n## {title}\n\n### TODO\n\n- [ ] \n- [ ] \n- [ ] ",
+}
+
+
+def parse_cli() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest="subcommand", required=True)
+    subparsers.add_parser("init", help="Initialize not config")
+
+    new_parser = subparsers.add_parser("new", help="Make a new note")
+    new_parser.add_argument(
+        "--template",
+        "-t",
+        type=str,
+        default="basic",
+        help="Name of the notes template to use (default: basic)",
+    )
+    new_parser.add_argument(
+        "--subdir", "-s", type=str, help="Subdirectory name to save note"
+    )
+    new_parser.add_argument("title", type=str, help="Title of the note")
+    new_parser.add_argument("tags", nargs="+", type=str, help="Tags for the note")
+
+    open_parser = subparsers.add_parser("open", help="Open a note")
+    open_parser.add_argument("note", type=Path, help="Path to the note to open")
+
+    subparsers.add_parser("search", help="Search in notes")
+
+    return parser.parse_args()
+
+def input_confirm(prompt: str, default: bool = False) -> bool:
+    if default:
+        prompt += " [Y/n]: "
+    else:
+        prompt += " [y/N]: "
+    response = input(prompt)
+    if response.lower() == "y":
+        return True
+    if response.lower() == "n":
+        return False
+    return default
+
+
+def create_config() -> None:
+    print("Initializing not config")
+    # Check if config already exists
+    if CONFIG_PATH.exists():
+        raise ValueError("Config file already exists")
+    config = {}
+
+    # Get input for location of notes dir and validate
+    loc_str = input("Enter the location of the notes directory: ")
+    loc = Path(loc_str).expanduser().absolute()
+    if not loc.exists():
+        loc.mkdir(parents=True)
+    config["notes_dir"] = str(loc)
+
+    # Get input for editor command and validate
+    editor = input("Enter the command to open your editor: ")
+    # TODO: Validate editor command
+    config["editor"] = editor
+
+    # Get input for author name and confirm
+    author = input("Enter your name for author headers: ")
+    if not input_confirm(f"Is {author} correct?", default=True):
+        print("Exiting...")
+        return
+    config["author"] = author
+
+    print("Config Preview:")
+    print(json.dumps(config, indent=4))
+    if not input_confirm("Is this correct?", default=True):
+        print("Exiting...")
+        return
+
+    with CONFIG_PATH.open("w") as file:
+        json.dump(config, file, indent=4)
+
+    print("Config file created at: ", CONFIG_PATH)
+    return
+
+
+def load_config() -> dict:
+    if not CONFIG_PATH.exists():
+        raise ValueError("Config file does not exist, run 'not init' to create it")
+    return json.loads(CONFIG_PATH.read_text())
+
+
+def build_yaml_header(
+    title: str, tags: list[str], author: str, date: str, **kwargs
+) -> str:
+    lines = "---\n"
+    body = f"title: {title}\ntags: {tags}\nauthor: {author}\ndate: {date}\n"
+    body += "\n".join([f"{k}: {v}" for k, v in kwargs.items()])
+    return lines + body + lines
+
+
+def ansidate() -> str:
+    return datetime.datetime.now().strftime("%Y-%m-%d")
+
+
+def assemble_note(yaml_header: str, template: str, title: str) -> str:
+    return TEMPLATES[template].format(yaml_header=yaml_header, title=title)
+
+
+def new_note_name(date: str, template: str, title: str) -> str:
+    return f"{date}_{template}_{title}.md"
+
+
+def open_note(path: Path, editor: str) -> None:
+    cmd = f"{editor} {path}".split()
+    subprocess.run(cmd)
+
+
+def fzf_filenames(dir: Path) -> Path:
+    cmd = f"find {dir}"
+    find_results = subprocess.run(
+        cmd, shell=True, text=True, capture_output=True
+    ).stdout
+    fzf_result = subprocess.run(
+        "fzf", input=find_results, text=True, capture_output=True
+    ).stdout
+    return Path(fzf_result.strip())
+
+
+def new_note(args: argparse.Namespace) -> None:
+    config = load_config()
+    print("Creating a new note...")
+    assert (
+        args.template in TEMPLATES.keys()
+    ), f"Invalid template '{args.template}', available: {list(TEMPLATES.keys())}"
+
+    header = build_yaml_header(
+        title=args.title,
+        tags=args.tags,
+        author=config["author"],
+        date=ansidate(),
+    )
+    note_str = assemble_note(header, args.template, args.title)
+    note_name = new_note_name(ansidate(), args.template, args.title)
+
+    if args.subdir:
+        note_path = Path(config["notes_dir"]) / args.subdir / note_name
+        note_path.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        note_path = Path(config["notes_dir"]) / note_name
+
+    if note_path.exists():
+        raise ValueError(f"{note_path} already exists")
+
+    with note_path.open("w") as file:
+        file.write(note_str)
+    print(f"Note created at: {note_path}")
+
+    open_note(note_path, config["editor"])
+
+
+def search_notes() -> None:
+    config = load_config()
+    notes_dir = Path(config["notes_dir"])
+    note_path = fzf_filenames(notes_dir)
+    open_note(note_path, config["editor"])
+
+
+def main() -> None:
+    args = parse_cli()
+
+    match args.subcommand:
+        case "init":
+            create_config()
+        case "new":
+            new_note(args)
+        case "open":
+            assert args.note.exists(), f"Note {args.note} does not exist"
+            open_note(args.note, load_config()["editor"])
+        case "search":
+            search_notes()
+        case _:
+            raise ValueError("Invalid subcommand")
+
+
+if __name__ == "__main__":
+    main()
+    exit(0)

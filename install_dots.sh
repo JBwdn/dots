@@ -60,6 +60,12 @@ install_dotfile $dots_dir/alacritty.toml $HOME/.config/alacritty/alacritty.toml
 mkdir -p $HOME/.config/zellij
 install_dotfile $dots_dir/zellij.kdl $HOME/.config/zellij/config.kdl
 
+mkdir -p $HOME/.config/sway
+install_dotfile $dots_dir/sway $HOME/.config/sway/config
+
+mkdir -p $HOME/.config/waybar
+install_dotfile $dots_dir/waybar.jsonc $HOME/.config/waybar/config
+
 # Symlinking dirs:
 echo "Installing dirs..."
-install_dir $dots_dir/scripts/ $HOME/Scripts
+install_dir $dots_dir/scripts/ $HOME/scripts

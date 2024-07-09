@@ -4,7 +4,7 @@ pane_frames true
 simplified_ui true
 scrollback_editor "nvim -u scrollback.lua"
 
-theme "kanagawa"
+theme "kanagawa-lotus"
 
 keybinds clear-defaults=true {
 	normal {
@@ -58,7 +58,7 @@ plugins {
 }
 
 themes {
-	kanagawa {
+	kanagawa-wave {
 		fg "#DCD7BA"
 		bg "#1F1F28"
 		red "#C34043"
@@ -70,6 +70,19 @@ themes {
 		cyan "#7FB4CA"
 		black "#16161D"
 		white "#DCD7BA"
+	}
+	kanagawa-lotus {
+		bg "#F2ECBC"
+		fg "#F2ECBC"
+		red "#F2ECBC"
+		green "#6F894E"
+		yellow "#77713F"
+		blue "#4D699B"
+		magenta "#B35B79"
+		orange "#FFA066"
+		cyan "#597B75"
+		black "#1F1F28"
+		white "#545464"
 	}
 }
 

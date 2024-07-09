@@ -9,7 +9,7 @@ source $ZSH/oh-my-zsh.sh
 export SCREENDIR=$HOME/.screen
 
 # Add scripts dir to path:
-export PATH="$HOME/Scripts:$PATH"
+export PATH="$HOME/scripts:$PATH"
 
 # binds:
 EDITOR=nvim
@@ -28,15 +28,19 @@ alias vi=nvim
 alias v=nvim
 alias nv=neovide
 alias h="cd $HOME; ls"
+
 alias t="exa -T -L 2"
 alias t3="exa -T -L 3"
+
 alias rm="trash"
-alias clip="xclip -sel c < "
+alias clip="wl-copy < "
 alias ssh_fwd="eval $(ssh-agent -s) ; ssh-add ~/.ssh/id_ed25519"
 alias dots="vi $HOME/dots/"
-alias pyloc="git ls-files | grep '.py' | xargs wc -l"
+
 alias docker=podman
 alias pm=podman
+
+alias pyloc="git ls-files | grep '.py' | xargs wc -l"
 alias rhash="head /dev/urandom | sha1sum | head -c 10"
 
 alias mm="micromamba"
@@ -56,6 +60,15 @@ alias gg="git log --oneline --graph --decorate --all"
 
 alias pc="pre-commit run --all-files"
 alias ct="ctags -R ."
+
+alias tardir="tar -czvf"
+alias untar="tar -xzvf"
+
+alias wifi-scan="iwctl station wlan0 get-networks"
+alias wifi-connect="iwctl station wlan0 connect "
+alias wifi-disconnect="iwctl station wlan0 disconnect"
+
+alias display-toggle="swaymsg output eDP-1 toggle"
 
 # Functions:
 function peco-hist(){
