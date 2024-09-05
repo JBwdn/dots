@@ -248,6 +248,13 @@ require("lazy").setup({
 	{
 		"sourcegraph/sg.nvim",
 	},
+	{
+    'MeanderingProgrammer/markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+    config = function()
+        require('render-markdown').setup({})
+    end,
+	},
 	-- {  --  CAN ONLY MOVE OUT NOT IN YET!
 	-- 	"https://git.sr.ht/~swaits/zellij-nav.nvim",
 	-- 	lazy = true,
@@ -525,7 +532,7 @@ vim.opt.listchars = {
 	["space"] = "·",
 }
 vim.opt.termguicolors = true
-vim.cmd("colorscheme kanagawa-lotus")
+vim.cmd("colorscheme kanagawa-wave")
 
 
 -- Gui:
