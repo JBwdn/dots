@@ -1,0 +1,119 @@
+/*******************************************************************************
+ * ROFI Color theme
+ * User: u16ptr
+ ********************************************************************************/
+
+* {
+  cBackground: #f2ecbc;
+  cForeground: #545464;
+  cBlack: #8a8980;
+  cBlue: #6693bf;
+  cCyan: #5e857a;
+  cGreen: #6e915f;
+  cMagenta: #624c83;
+  cRed: #d7474b;
+  cWhite: #43436c;
+  cYellow: #836f4a;
+  gLineCount: 10;
+}
+
+configuration {
+  font: "BlexMono Nerd Font Mono 10";
+  display-drun: "Run:";
+  display-run: "Run:";
+}
+
+window {
+  padding: 0;
+  width: 540;
+  background-color: @cBackground;
+  border: 1;
+  border-color: @cGreen;
+}
+
+mainbox {
+  background-color: transparent;
+  border: 0;
+  padding: 4;
+}
+
+inputbar {
+  padding: 2 0;
+  background-color: transparent;
+  text-color: @cRed;
+  children: [prompt, entry, num-filtered-rows, textbox-sep, num-rows];
+}
+
+prompt {
+  background-color: transparent;
+  text-color: @cGreen;
+}
+
+entry {
+  background-color: transparent;
+  text-color: @cForeground;
+}
+
+textbox-sep,
+num-filtered-rows,
+num-rows {
+  background-color: transparent;
+  text-color: @cBlack;
+}
+
+textbox-sep {
+  expand: false;
+  str: "/";
+}
+
+message {
+  margin: 0 0 1 0;
+  border: 1;
+  border-color: @cGreen;
+}
+
+message,
+textbox {
+  background-color: transparent;
+  text-color: @cForeground;
+}
+
+textbox {
+  padding: 4;
+}
+
+listview {
+  background-color: transparent;
+  lines: @gLineCount;
+  scrollbar: true;
+}
+
+scrollbar {
+  background-color: transparent;
+  handle-width: 2;
+  handle-color: @cGreen;
+}
+
+element {
+  padding: 2 4;
+}
+
+element-icon {
+  margin: 0 4 0 0;
+  size: 12;
+}
+
+element.normal,
+element-icon.normal,
+element-text.normal {
+  background-color: transparent;
+  color: @cForeground;
+}
+
+element.selected,
+element-icon.selected,
+element-text.selected {
+  background-color: @cGreen;
+  color: @cBackground;
+}
+

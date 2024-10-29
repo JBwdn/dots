@@ -97,4 +97,17 @@ micromamba activate $env
 function csv(){
     csvtool readable $1 | view -
 }
+
+function trace_url(){
+  url=$1
+  while : ; do
+    echo "$url"
+    next_url=$(wget --server-response --spider "$url" 2>&1 | grep "Location" | tail -1 | awk '{print $2}')
+    if [[ "$next_url" == "$url" ]]; then
+      break
+    fi
+    url=$next_url
+  done
+}
+
 source $HOME/.local_zshrc

@@ -181,7 +181,8 @@ require("lazy").setup({
 	},
 	{
 		"L3MON4D3/LuaSnip",
-		event = "VeryLazy"
+		event = "VeryLazy",
+		dependencies = { "rafamadriz/friendly-snippets" },
 	},
 	{
 		"saadparwaiz1/cmp_luasnip",
@@ -255,6 +256,59 @@ require("lazy").setup({
         require('render-markdown').setup({})
     end,
 	},
+	{
+    "jake-stewart/multicursor.nvim",
+    branch = "1.0",
+    config = function()
+        local mc = require("multicursor-nvim")
+        mc.setup()
+        -- Add cursors above/below the main cursor.
+        vim.keymap.set({"n", "v"}, "<c-up>", function() mc.addCursor("k") end)
+        vim.keymap.set({"n", "v"}, "<c-down>", function() mc.addCursor("j") end)
+        -- Add a cursor and jump to the next word under cursor.
+        vim.keymap.set({"n", "v"}, "<c-n>", function() mc.addCursor("*") end)
+        -- Jump to the next word under cursor but do not add a cursor.
+        vim.keymap.set({"n", "v"}, "<c-s>", function() mc.skipCursor("*") end)
+        -- Rotate the main cursor.
+        vim.keymap.set({"n", "v"}, "<left>", mc.nextCursor)
+        vim.keymap.set({"n", "v"}, "<right>", mc.prevCursor)
+        -- Add and remove cursors with control + left click.
+        vim.keymap.set("n", "<c-leftmouse>", mc.handleMouse)
+        -- Customize how cursors look.
+        vim.api.nvim_set_hl(0, "MultiCursorCursor", { link = "Cursor" })
+        vim.api.nvim_set_hl(0, "MultiCursorVisual", { link = "Visual" })
+        vim.api.nvim_set_hl(0, "MultiCursorDisabledCursor", { link = "Visual" })
+        vim.api.nvim_set_hl(0, "MultiCursorDisabledVisual", { link = "Visual" })
+
+        vim.keymap.set("n", "<esc>", function()
+            if not mc.cursorsEnabled() then
+                mc.enableCursors()
+            elseif mc.hasCursors() then
+                mc.clearCursors()
+            else
+            end
+        end)
+    end,
+	},
+	{
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons",
+      "MunifTanjim/nui.nvim",
+    },
+		config = function()
+			require("neo-tree").setup({
+				close_if_last_window=true,
+				popup_border_style = "rounded",
+				window = {
+						position = "right",
+						width = 25
+					},
+				})
+			end
+  }
 	-- {  --  CAN ONLY MOVE OUT NOT IN YET!
 	-- 	"https://git.sr.ht/~swaits/zellij-nav.nvim",
 	-- 	lazy = true,
@@ -316,6 +370,9 @@ cmp.setup({
 	},
 })
 
+-- Snippet loading:
+require("luasnip.loaders.from_vscode").lazy_load()
+
 -- Copilot
 -- local copilot = require("copilot")
 -- copilot.setup({
@@ -376,7 +433,7 @@ require('lualine').setup {
 -- Which key
 local wk = require("which-key")
 wk.register({
-	["e"] = { "<cmd>:e .<CR>", "Explorer" },
+	["e"] = { "<cmd>Neotree toggle<CR>", "Explorer" },
 	["b"] = { "<C-o>", "Back" },
 	["N"] = { "<cmd>lua open_note()<CR>", "Notes" },
 	["p"] = { "\"+p", "System paste" },
@@ -532,14 +589,29 @@ vim.opt.listchars = {
 	["space"] = "·",
 }
 vim.opt.termguicolors = true
-vim.cmd("colorscheme kanagawa-wave")
 
+-- Read contents of ~/.colourscheme
+function _G.set_cs()
+	local file = io.open(os.getenv("HOME").. "/.colourscheme", "r")
+	if not file then return end
+	local cs = file:read "*a"
+	file:close()
+	cs = cs:gsub("\n", "")
+	if cs == "dark" then
+		vim.cmd("colorscheme kanagawa-wave")
+	elseif cs == "light" then
+		vim.cmd("colorscheme kanagawa-lotus")
+	 end
+end
+set_cs()
 
 -- Gui:
 if vim.g.neovide then
-	vim.g.neovide_scroll_animation_length = 0.02
-	vim.g.neovide_cursor_animation_length = 0.02
+	vim.g.neovide_scroll_animation_length = 0.00
+	vim.g.neovide_cursor_animation_length = 0.00
 	vim.keymap.set("n", "<C-+>", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1<CR>")
 	vim.keymap.set("n", "<C-->", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1<CR>")
 	vim.keymap.set("n", "<C-0>", ":lua vim.g.neovide_scale_factor = 1<CR>")
+	vim.keymap.set("n", "<F11>", ":lua vim.g.neovide_fullscreen = not vim.g.neovide_fullscreen<CR>")
+	vim.g.neovide_theme = 'auto'
 end

@@ -1,0 +1,18 @@
+fork = true
+
+[font]
+size = 19
+hinting = "full"
+edging = "antialias"
+
+[[font.normal]]
+family = "MonaspaceNeon"
+style = "semi-bold"
+
+[[font.bold]]
+family = "MonaspaceNeon"
+style = "bold"
+
+[[font.italic]]
+family = "MonaspaceRadon"
+style = "semi-bold"

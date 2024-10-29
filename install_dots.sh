@@ -54,6 +54,9 @@ install_dotfile $dots_dir/tmux.conf $HOME/.tmux.conf
 mkdir -p $HOME/.config/nvim  # Create nvim config dir if it doesn't exist
 install_dotfile $dots_dir/init.lua $HOME/.config/nvim/init.lua
 
+mkdir -p $HOME/.config/neovide
+install_dotfile $dots_dir/neovide $HOME/.config/neovide/config.toml
+
 mkdir -p $HOME/.config/alacritty
 install_dotfile $dots_dir/alacritty.toml $HOME/.config/alacritty/alacritty.toml
 

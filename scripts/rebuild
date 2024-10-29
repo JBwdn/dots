@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# List and warn about deleting files in the current folder:
+echo "rebuild will remove all files in the current folder:"
+find . -not -name '.' -not -name '..' | xargs ls -l
+
+read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+find . -not -name '.' -not -name '..' | xargs rm -rf
+
+# If arguments are passed, create model dirs and touch files in them:
+if [ $# -gt 0 ]
+then
+    mkdir model_a model_b
+    for ext in "$@"
+    do
+        touch model_a/response.$ext
+        touch model_b/response.$ext
+    done
+fi

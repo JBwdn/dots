@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+"""
+DirCMD - directory specific shell shortcuts/aliases
+Jake Bowden 2024
+"""
+
+import argparse
+import json
+import subprocess
+from pathlib import Path
+
+DEFAULT_CONFIG_PATH = Path(".dircmd.json")
+DEFAULT_CONFIG = {"help": "Use dc --help to see the help page for dc"}
+
+
+def parse_cli() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--config",
+        "-c",
+        default=DEFAULT_CONFIG_PATH,
+        help=f"Path to config file (default: {DEFAULT_CONFIG_PATH})",
+        type=Path,
+    )
+    parser.add_argument(
+        "--show",
+        "-s",
+        help="Show the aliases from the config file",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--new",
+        "-n",
+        help="Create a new config file.",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "Alias",
+        help="Alias to execute.",
+        nargs="?",
+    )
+    return parser.parse_args()
+
+
+def load_config(path: Path) -> dict[str, str]:
+    assert path.exists(), f"Config file {path} does not exist"
+    with open(path, "r") as f:
+        return json.load(f)
+
+
+def write_config(path: Path, config: dict[str, str]) -> None:
+    assert not path.exists(), f"Config file {path} already exists"
+    with open(path, "w") as f:
+        json.dump(config, f, indent=4)
+    print(f"Config file {path} created.")
+
+
+def print_config(config: dict[str, str]) -> None:
+    print("\nAlias\t\tCMD")
+    for alias, cmd in config.items():
+        print(f"{alias}\t\t{cmd}")
+    print()
+
+
+def run(alias: str, config: dict) -> None:
+    assert alias in config.keys(), f"Alias {alias} does not exist"
+    cmd = config[alias]
+    subprocess.call(cmd.split())
+
+
+if __name__ == "__main__":
+    args = parse_cli()
+    if args.new:
+        write_config(args.config, DEFAULT_CONFIG)
+        exit()
+    config = load_config(args.config)
+    if args.show:
+        print_config(config)
+        exit()
+    if args.Alias is not None:
+        run(args.Alias, config)
+    exit()

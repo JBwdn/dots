@@ -1,0 +1,55 @@
+#! /usr/bin/env bash
+
+# Toggle various application dark/light themes
+
+function sway_bg(){
+	WP_DIR="/home/jb/images/wallpapers/"$1
+	WP=$(ls $WP_DIR | sort -R | head -1)
+	cp $WP_DIR/$WP ~/.config/sway/wallpaper.png
+	swaymsg reload
+}
+
+function term_colours(){
+	if [[ "$1" == "dark" ]]; then
+		cp ~/dots/kanagawa-wave.toml ~/.config/alacritty/colourscheme.toml
+	elif [[ "$1" == "light" ]]; then
+		cp ~/dots/kanagawa-lotus.toml ~/.config/alacritty/colourscheme.toml
+	fi
+	touch ~/dots/alacritty.toml
+}
+
+function gtk_theme(){
+	if [[ "$1" == "dark" ]]; then
+		gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+		gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+	elif [[ "$1" == "light" ]]; then
+		gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita'
+		gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
+	fi
+}
+
+function rofi_theme(){
+	mkdir -p ~/.config/rofi
+	if [[ "$1" == "dark" ]]; then
+		echo '@theme "~/dots/rofi-kanagawa-wave.rasi"' > ~/.config/rofi/config.rasi
+	elif [[ "$1" == "light" ]]; then
+		echo '@theme "~/dots/rofi-kanagawa-lotus.rasi"' > ~/.config/rofi/config.rasi
+	fi
+}
+
+CS=$(cat ~/.colourscheme)
+
+if [[ "$CS" == "dark" ]]; then
+	CS="light"
+elif [[ "$CS" == "light" ]]; then
+	CS="dark"
+else
+	CS="dark"
+fi
+
+echo $CS > ~/.colourscheme
+
+term_colours $CS
+sway_bg $CS
+gtk_theme $CS
+rofi_theme $CS
